@@ -57,7 +57,7 @@ class logic extends ChangeNotifier {
     isStart = true;
     s=[];
     for(int i=0;i<n*n;i++) s.add(i);
-    for (int i = 0; i <150*n; i++)
+    for (int i = 0; i <50*n; i++)
     {
     isStart = false;
       iswin=false;

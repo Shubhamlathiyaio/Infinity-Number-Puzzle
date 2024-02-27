@@ -9,8 +9,11 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   var height=MediaQuery.of(context).size.height-130;
+   var width= MediaQuery.of(context).size.width;
 
     logic l = Provider.of(context);
+  print(l.isStart);
     return Scaffold(
         appBar: AppBar(actions: [
           IconButton(
@@ -19,13 +22,13 @@ class Home extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: SizedBox(height: 600,width: 400,
-                      child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3,crossAxisSpacing: 5,mainAxisSpacing: 5),itemCount: 6, itemBuilder: (context, index) {
+                    title: SizedBox(height: height,width: width,
+                      child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5,crossAxisSpacing: 5,mainAxisSpacing: 5),itemCount: 32, itemBuilder: (context, index) {
                         return InkWell(onTap: () async {
-                          n=index+3;
+                          n=index+2;
                           l.spread(n);
                           Navigator.pop(context);
-                        },child: Container(alignment: Alignment.center,child: Text('${index+3}'),color: Colors.pink,));
+                        },child: Container(alignment: Alignment.center,child: Text('${index+2}'),color: Colors.pink,));
                       },),
                     )
                   ),
@@ -43,25 +46,28 @@ class Home extends StatelessWidget {
                       'You win',
                       style: TextStyle(fontSize: 24),
                     )
-                  : Text(''),
+                  : Text('', style: TextStyle(fontSize: 24)),
               Spacer(),
               Container(
-                height: 400,
-                width: 400,
+                height: height,
+                width: width,
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: n,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5),
+                      crossAxisSpacing: 1,
+                      mainAxisSpacing: 1),
                   itemCount: n * n,
                   itemBuilder: (context, index) {
                     return Visibility(
                       visible: ((l.iswin) ? true : n * n - 1 != l.s[index]),
                       child: InkWell(
-                        onTap: () => l.iswin ? null : l.swap(index),
+                        onTap: () {
+                          if(!l.isStart) l.spread(n);
+                          l.iswin ? null : l.swap(index);
+                        },
                         child: AnimatedSwitcher(
                           duration: Duration(milliseconds: 300),
-                          child: con(l, index),
+                          child: con(l, index,width),
                         ),
                       ),
                       replacement: Container(),
@@ -84,11 +90,11 @@ class Home extends StatelessWidget {
         ));
   }
 
-  Widget con(final l, int index) {
+  Widget con(final l, int index, double w) {
     return Container(
       color: l.color > index ? Colors.purple : Colors.blue,
       alignment: Alignment.center,
-      child: Text('${l.s[index] + 1}', style: TextStyle(fontSize: 32)),
+      child: Text('${l.s[index] + 1}', style: TextStyle(fontSize: w/(n*2))),
     );
   }
 
