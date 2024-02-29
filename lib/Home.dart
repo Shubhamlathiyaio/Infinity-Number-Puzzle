@@ -9,11 +9,10 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   var height=MediaQuery.of(context).size.height-130;
+   var height=MediaQuery.of(context).size.height-180;
    var width= MediaQuery.of(context).size.width;
 
     logic l = Provider.of(context);
-  print(l.isStart);
     return Scaffold(
         appBar: AppBar(actions: [
           IconButton(
@@ -23,7 +22,7 @@ class Home extends StatelessWidget {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: SizedBox(height: height,width: width,
-                      child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5,crossAxisSpacing: 5,mainAxisSpacing: 5),itemCount: 32, itemBuilder: (context, index) {
+                      child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5,crossAxisSpacing: 5,mainAxisSpacing: 5), itemBuilder: (context, index) {
                         return InkWell(onTap: () async {
                           n=index+2;
                           l.spread(n);
@@ -34,14 +33,13 @@ class Home extends StatelessWidget {
                   ),
                 );
               },
-              icon: Icon(Icons.add_box))
+              icon: Icon(Icons.calendar_view_month_sharp))
         ]),
         body: Center(
-          child: Column(
+          child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Spacer(),
-              // IconButton(onPressed: l.spread(), icon: Icon(Icons.ac_unit_outlined)),
-              l.iswin
+              l.isWin
                   ? Text(
                       'You win',
                       style: TextStyle(fontSize: 24),
@@ -49,8 +47,8 @@ class Home extends StatelessWidget {
                   : Text('', style: TextStyle(fontSize: 24)),
               Spacer(),
               Container(
-                height: height,
-                width: width,
+                height: height>width ? width-5:height-5,
+                width: height>width ? width-5:height-5,
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: n,
@@ -59,15 +57,17 @@ class Home extends StatelessWidget {
                   itemCount: n * n,
                   itemBuilder: (context, index) {
                     return Visibility(
-                      visible: ((l.iswin) ? true : n * n - 1 != l.s[index]),
+                      visible: ( l.isWin? true : n * n - 1 != l.s[index]),
                       child: InkWell(
-                        onTap: () {
-                          if(!l.isStart) l.spread(n);
-                          l.iswin ? null : l.swap(index);
+                        onTap: () async {
+                          //For spread the boxes random when the game not start
+                          if(!l.isStart && !l.canClick) l.spread(n);
+                          // For Swap drag box in empty Space when game is not win
+                            l.isWin ? null : l.swap(index);
                         },
                         child: AnimatedSwitcher(
                           duration: Duration(milliseconds: 300),
-                          child: con(l, index,width),
+                          child: con(l, index,height>width ? width:height),
                         ),
                       ),
                       replacement: Container(),
@@ -76,25 +76,26 @@ class Home extends StatelessWidget {
                 ),
               ),
               Spacer(),
-              ElevatedButton(
-                  onPressed: () {
-                    l.isStart = false;
-                    l.iswin = false;
-                    l.color = 0;
-                    l.spread(n);
-                  },
-                  child: Text('Reset')),
+              Spacer(),
+                  ElevatedButton(
+                      onPressed: () {
+                        l.isStart = false;
+                        l.isWin = false;
+                        l.color = 0;
+                        l.spread(n);
+                      },
+                      child: Text('Reset')),
               Spacer()
             ],
           ),
         ));
   }
 
-  Widget con(final l, int index, double w) {
+  Widget con(final l, int index, double size) {
     return Container(
       color: l.color > index ? Colors.purple : Colors.blue,
       alignment: Alignment.center,
-      child: Text('${l.s[index] + 1}', style: TextStyle(fontSize: w/(n*2))),
+      child: Text('${l.s[index] + 1}', style: TextStyle(fontSize: size/(n*2))),
     );
   }
 
